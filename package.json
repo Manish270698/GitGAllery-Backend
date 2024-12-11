@@ -1,0 +1,39 @@
+{
+  "name": "gitgallery-backend",
+  "version": "1.0.0",
+  "description": "A gallery of your git repos",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Manish270698/GitGAllery-Backend.git"
+  },
+  "keywords": [
+    "nodejs",
+    "javascript",
+    "restAPI"
+  ],
+  "author": "Manish Kumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Manish270698/GitGAllery-Backend/issues"
+  },
+  "homepage": "https://github.com/Manish270698/GitGAllery-Backend#readme",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.4",
+    "nodemailer": "^6.9.16",
+    "nodemon": "^3.1.7",
+    "validator": "^13.12.0"
+  }
+}
