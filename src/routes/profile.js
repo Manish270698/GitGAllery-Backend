@@ -24,7 +24,8 @@ profileRouter.post(
         { _id: loggedInUser },
         {
           $set: data[0][0],
-        }
+        },
+        { runValidators: true }
       );
 
       if (!user.acknowledged) {
@@ -42,7 +43,7 @@ profileRouter.post(
 );
 
 profileRouter.get(
-  "/profile/loggedIn/:id/view",
+  "/profile/loggedIn/view",
   userAuth,
   async (req, res, next) => {
     try {
@@ -58,5 +59,23 @@ profileRouter.get(
     }
   }
 );
+
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.json({
+      message: "Login Successful!",
+      user: {
+        id: user._id,
+        githubUserName: user.githubUserName,
+        name: user.name,
+        emailId: user.emailId,
+        skills: user.skills,
+      },
+    });
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
 
 module.exports = profileRouter;

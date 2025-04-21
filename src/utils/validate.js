@@ -6,14 +6,24 @@ const {
 } = require("../constants");
 const { default: isURL } = require("validator/lib/isURL");
 
-const validateSignUpData = async (githubUserName, name, emailId, skills) => {
-  if (githubUserName && githubUserName.length > 0) {
-    await gitAuth(githubUserName);
+const validateSignUpData = async (userName, name, emailId, skills) => {
+  console.log("userName: ", userName, userName.length);
+  console.log("name: ", name, name.length);
+  console.log("emailId: ", emailId, emailId.length);
+  console.log("skills: ", skills);
+  if (userName && userName.trim().length >= 1 && userName.trim().length < 3) {
+    throw new Error("Username should be atleast 3 characters long!");
+  } else if (
+    userName &&
+    userName.trim().length >= 1 &&
+    userName.trim().length > 15
+  ) {
+    throw new Error("Max lenth of username should be 15!");
   } else if (name && name.trim().length >= 1 && name.trim().length < 3) {
     throw new Error("Name should be atleast 3 characters long!");
   } else if (name && name.trim().length >= 1 && name.trim().length > 30) {
-    throw new Error("Max lenth of name should be 30!");
-  } else if (emailId && emailId.length > 0 && !isEmail(emailId)) {
+    throw new Error("Max length of name should be 30!");
+  } else if (!emailId && !isEmail(emailId)) {
     throw new Error("Email id is not valid!");
   } else if (emailId.length === 0) {
     throw new Error("Please enter your email id!");
@@ -21,7 +31,8 @@ const validateSignUpData = async (githubUserName, name, emailId, skills) => {
     throw new Error("Enter at least 3 of your top skills!");
   } else if (
     skills &&
-    new Set(skills).size !== skills.map((e) => e.toLowerCase()).length
+    new Set(skills.map((e) => e.toLowerCase())).size !==
+      skills.map((e) => e.toLowerCase()).length
   ) {
     throw new Error("Duplicate skills not allowed!");
   }
@@ -39,7 +50,7 @@ const validateSaveData = async (data, loggedInUser) => {
   const isRepoUpdateAllowed = repoData.every((obj) =>
     Object.entries(obj).every(([key, value]) => {
       if (key === "userId") {
-        if (value !== loggedInUser) throw new Error("Update now allowed!");
+        if (value !== loggedInUser) throw new Error("Update not allowed!");
       }
       return REPO_SAVE_SAFE_FIELDS.includes(key);
     })
@@ -48,9 +59,11 @@ const validateSaveData = async (data, loggedInUser) => {
     throw new Error("Update not allowed!");
   }
   for (const obj of userData) {
-    const { name, skills, githubUserName } = obj;
+    const { name, skills } = obj;
     if (name && name.trim().length < 3) {
       throw new Error("Name should be at least 3 characters long!");
+    } else if (name && name.trim().length > 30) {
+      throw new Error("Max length of name should be 30!");
     } else if (skills && skills.length > 0 && skills.length < 3) {
       throw new Error("Enter at least 3 top skills!");
     } else if (skills.length > 5) {
@@ -61,10 +74,6 @@ const validateSaveData = async (data, loggedInUser) => {
       new Set(skills).size !== skills.map((e) => e.toLowerCase()).length
     ) {
       throw new Error("Duplicate skills not allowed!");
-    } else if (githubUserName && githubUserName.trim().length === 0) {
-      throw new Error("Invalid github username!");
-    } else if (githubUserName && githubUserName.trim().length > 0) {
-      await gitAuth(githubUserName);
     }
   }
   for (const repo of repoData) {
@@ -82,8 +91,8 @@ const validateSaveData = async (data, loggedInUser) => {
       throw new Error(
         "Maximum allowed length of description is 200 characters!"
       );
-    } else if (repoSkills && repoSkills.length > 0 && repoSkills.length < 3) {
-      throw new Error("Enter at least 3 top skills!");
+    } else if (repoSkills && repoSkills.length > 0 && repoSkills.length < 2) {
+      throw new Error("Enter at least 2 skills or no skills for a repository!");
     } else if (repoSkills.length > 5) {
       throw new Error("Maximum 5 skills allowed for a single repository!");
     } else if (

@@ -6,6 +6,8 @@ const sendMail = require("../utils/sendEmail");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const { config } = require("dotenv");
+const Repository = require("../models/repository");
+const mongoose = require("mongoose");
 config();
 
 const userRouter = express.Router();
@@ -17,6 +19,36 @@ userRouter.get("/user/:username/view", async (req, res, next) => {
     res.json({
       message: "Repository fetched",
       data: repoData,
+    });
+  } catch (err) {
+    res.status(400).send({ ERROR: err.message });
+  }
+});
+
+userRouter.get("/user/:username/shared", async (req, res, next) => {
+  try {
+    const username = req.params.username;
+    if (username === null || username === "") throw new Error("Invalid link");
+    let userData;
+    if (mongoose.isValidObjectId(username)) {
+      userData = await User.findById({ _id: username });
+    }
+    let repoData;
+    if (userData) {
+      repoData = await Repository.find({ userId: username });
+    } else {
+      return res.status(404).send({ ERROR: "User not found!" });
+    }
+
+    const data = {
+      name: userData.name || username,
+      skills: userData.skills || [],
+      repoData,
+    };
+
+    res.json({
+      message: "Data fetched",
+      data,
     });
   } catch (err) {
     res.status(400).send({ ERROR: err.message });
@@ -52,8 +84,11 @@ userRouter.get("/user/:username/view", async (req, res, next) => {
 
 userRouter.post("/user/forgotpassword", async (req, res, next) => {
   try {
-    const { emailId } = req.body;
-    const user = await User.findOne({ emailId });
+    const { username } = req.body;
+    const user = await User.findOne({
+      $or: [{ userName: username }, { emailId: username }],
+    });
+
     if (!user) {
       throw new Error("User doesn't exist!");
     }
@@ -63,7 +98,7 @@ userRouter.post("/user/forgotpassword", async (req, res, next) => {
 
     //Send token via email
     const url = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
-    const message = `Click on the link to reset your password : ${url}. Ignore if you haven't requested.`;
+    const message = `Click on the link to reset your password : ${url} within 15 minutes. Ignore if you haven't requested.`;
     await sendMail(user.emailId, "GitGallery password reset", message);
 
     res.status(200).json({

@@ -1,4 +1,4 @@
-const USER_SAVE_SAFE_FIELDS = ["name", "skills", "githubUserName"];
+const USER_SAVE_SAFE_FIELDS = ["name", "skills"];
 const REPO_SAVE_SAFE_FIELDS = [
   "userId",
   "repoName",

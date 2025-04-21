@@ -2,6 +2,8 @@ const axios = require("axios");
 
 const gitRepoData = async (username) => {
   try {
+    if (username === null || username === "")
+      throw new Error("Invalid github username!");
     let repoData = await axios.get(
       process.env.GIT_URL + "/" + username + "/repos"
     );
@@ -10,7 +12,7 @@ const gitRepoData = async (username) => {
     }
     repoData = repoData.data.map((repo, index) => {
       return {
-        id: repo?.id,
+        _id: repo?.id,
         repoName: repo?.name,
         repositoryLink: repo?.html_url,
         deployedLink: repo?.homepage,

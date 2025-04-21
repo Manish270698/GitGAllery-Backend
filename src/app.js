@@ -9,7 +9,7 @@ const profileRouter = require("./routes/profile");
 
 connectDB()
   .then(() => {
-    console.log("Databse connected successfully!");
+    console.log("Database connected successfully!");
     app.listen(7777, () => {
       console.log("Server listenin on port 7777");
     });
@@ -20,7 +20,7 @@ connectDB()
 
 app.use(
   cors({
-    origin: "https://localhost:5173",
+    origin: "http://localhost:5173",
     credentials: true,
     methods: ["GET", "PUT", "POST", "PATCH", "DELETE"],
   })

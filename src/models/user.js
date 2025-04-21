@@ -33,9 +33,13 @@ const many = [
 
 const userSchema = new mongoose.Schema(
   {
-    githubUserName: {
+    userName: {
       type: String,
       required: false,
+      minLength: 3,
+      maxLength: 15,
+      trim: true,
+      unique: true,
     },
     name: {
       type: String,

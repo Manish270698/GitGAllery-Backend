@@ -12,18 +12,32 @@ const authRouter = express.Router();
 
 authRouter.post("/signup", async (req, res, next) => {
   try {
-    let { githubUserName, emailId, name, password, skills } = req.body;
-    await validateSignUpData(githubUserName, name, emailId, skills);
-    const presentUser = await User.findOne({ emailId });
-    if (presentUser) {
+    let { userName, emailId, name, password, skills } = req.body;
+    await validateSignUpData(userName, name, emailId, skills);
+
+    if (
+      await User.findOne({
+        $or: [
+          {
+            userName: {
+              $regex: new RegExp(`^${userName.toLowerCase()}$`, "i"),
+            },
+          },
+          { userName: { $regex: new RegExp(`^${userName}$`, "i") } },
+        ],
+      })
+    ) {
+      throw new Error("An account with the provided username already exists!");
+    }
+    if (await User.findOne({ emailId })) {
       throw new Error("An account with the provided email already exists!");
     }
 
-    if (!name || name.length === 0) name = githubUserName;
+    if (!name || name.length === 0) name = userName;
 
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({
-      githubUserName,
+      userName,
       name,
       emailId,
       password: passwordHash,
@@ -34,11 +48,13 @@ authRouter.post("/signup", async (req, res, next) => {
     res.cookie("token", token, {
       expires: new Date(Date.now() + 168 * 3600000), //expires after 168 hours/ 7 days
       httpOnly: true,
+      secure: true,
+      sameSite: "None",
     });
     res.json({
       message: "Signed up successfully.",
       user: {
-        githubUserName,
+        userName,
         name,
         emailId,
         skills,
@@ -53,7 +69,10 @@ authRouter.post("/login", async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({
-      $or: [{ githubUserName: username }, { emailId: username }],
+      $or: [
+        { userName: { $regex: new RegExp(`^${username}$`, "i") } },
+        { emailId: { $regex: new RegExp(`^${username}$`, "i") } },
+      ],
     });
     if (!user) {
       throw new Error("Invalid credentials!");
@@ -65,11 +84,14 @@ authRouter.post("/login", async (req, res, next) => {
       res.cookie("token", token, {
         expires: new Date(Date.now() + 168 * 3600000), //expires after 168 hours/ 7 days
         httpOnly: true,
+        secure: true,
+        sameSite: "None",
       });
 
       res.json({
         message: "Login Successful!",
         user: {
+          id: user._id,
           githubUserName: user.githubUserName,
           name: user.name,
           emailId: user.emailId,
@@ -80,17 +102,22 @@ authRouter.post("/login", async (req, res, next) => {
       throw new Error("Invalid credentials!");
     }
   } catch (err) {
-    res.status(400).send({ ERROR: err.message });
+    res.status(401).send({ ERROR: err.message });
   }
 });
 
 authRouter.post("/signout", (req, res, next) => {
   try {
-    res.cookie("token", "", { expires: new Date(Date.now()), httpOnly: true });
-    res.send("Logout successfull.");
+    res
+      .cookie("token", "", {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .send("Logout successfull.");
   } catch (err) {
     res.status(400).send({ ERROR: err.message });
   }
 });
-
 module.exports = authRouter;
