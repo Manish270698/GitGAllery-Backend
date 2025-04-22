@@ -22,9 +22,19 @@ connectDB()
     console.error("Error while connecting to database with message: ", err);
   });
 
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173",
+//     credentials: true,
+//     methods: ["GET", "PUT", "POST", "PATCH", "DELETE"],
+//   })
+// );
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://gitgallery-frontend.onrender.com",
+    ],
     credentials: true,
     methods: ["GET", "PUT", "POST", "PATCH", "DELETE"],
   })
