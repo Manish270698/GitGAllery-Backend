@@ -6,11 +6,15 @@ const cors = require("cors");
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const profileRouter = require("./routes/profile");
+const { config } = require("dotenv");
+config();
+
+const port = process.env.PORT || 4000;
 
 connectDB()
   .then(() => {
     console.log("Database connected successfully!");
-    app.listen(7777, () => {
+    app.listen(port, () => {
       console.log("Server listenin on port 7777");
     });
   })
