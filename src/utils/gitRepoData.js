@@ -35,7 +35,10 @@ const gitRepoData = async (username) => {
 
     return repoData;
   } catch (err) {
-    console.log("hello3");
+    console.error(
+      "GitHub API Error:",
+      err.response ? err.response.data : err.message
+    );
     throw new Error("Invalid github username!");
   }
 };
