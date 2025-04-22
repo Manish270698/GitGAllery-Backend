@@ -6,7 +6,12 @@ const gitRepoData = async (username) => {
       throw new Error("Invalid github username!");
     }
     let repoData = await axios.get(
-      process.env.GIT_URL + "/" + username + "/repos"
+      process.env.GIT_URL + "/" + username + "/repos",
+      {
+        headers: {
+          Authorization: `token ${process.env.GITHUB_TOKEN}`,
+        },
+      }
     );
     if (repoData.status === 400) {
       throw new Error("Invalid github username!");
