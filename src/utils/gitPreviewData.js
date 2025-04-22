@@ -33,7 +33,12 @@ const gitPreviewData = async (username) => {
     //       });
     // }
 
-    repoData = await axios.get(process.env.GIT_URL + "/" + username + "/repos");
+    repoData = await axios.get(process.env.GIT_URL + "/" + username + "/repos",
+      {
+        headers: {
+          Authorization: `token ${process.env.GITHUB_TOKEN}`,
+        },
+      });
     if (repoData.status === 400) {
       throw new Error("Invalid github username!");
     }

@@ -4,7 +4,14 @@ config();
 
 const gitAuth = async (githubUserName) => {
   try {
-    const gitData = await axios.get(process.env.GIT_URL + "/" + githubUserName);
+    const gitData = await axios.get(
+      process.env.GIT_URL + "/" + githubUserName,
+      {
+        headers: {
+          Authorization: `token ${process.env.GITHUB_TOKEN}`,
+        },
+      }
+    );
     if (gitData.status === 400) {
       throw new Error("Invalid github username!");
     }
