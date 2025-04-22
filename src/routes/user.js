@@ -14,6 +14,7 @@ const userRouter = express.Router();
 
 userRouter.get("/user/:username/view", async (req, res, next) => {
   try {
+    console.log("Hello");
     let repoData = await gitRepoData(req.params.username);
 
     res.json({
