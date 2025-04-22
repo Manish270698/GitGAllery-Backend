@@ -27,7 +27,7 @@ const gitRepoData = async (username) => {
 
     return repoData;
   } catch (err) {
-    console.log("hello2");
+    console.log("hello3");
     throw new Error("Invalid github username!");
   }
 };
