@@ -21,6 +21,7 @@ userRouter.get("/user/:username/view", async (req, res, next) => {
       data: repoData,
     });
   } catch (err) {
+    console.error("GitHub API Error:", err.message);
     res.status(400).send({ ERROR: err.message });
   }
 });
