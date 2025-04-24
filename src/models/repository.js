@@ -36,7 +36,7 @@ const repositorySchema = new mongoose.Schema(
     },
     repositoryLink: {
       type: String,
-      required: true,
+      required: false,
     },
     deployedLink: {
       type: String,
