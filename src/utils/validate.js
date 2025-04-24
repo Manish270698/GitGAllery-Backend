@@ -83,7 +83,7 @@ const validateSaveData = async (data, loggedInUser) => {
       throw new Error(
         "Maximum allowed length of repository name is 100 characters!"
       );
-    } else if (!isURL(repositoryLink)) {
+    } else if (!isURL(repositoryLink) && repositoryLink !== "") {
       throw new Error("Invalid repository link entered!");
     } else if (deployedLink && !isURL(deployedLink)) {
       throw new Error("Invalid deployment link entered!");
